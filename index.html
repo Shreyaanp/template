@@ -12,15 +12,39 @@
     </header>
 
     <main>
-        <div id="content"></div>
-
+        <nav>
+            <a href="#" onclick="loadPage('home.html')">Home</a>
+            <a href="#" onclick="loadPage('about.html')">About</a>
+            <a href="#" onclick="loadPage('contact.html')">Contact</a>
+        </nav>
+    
+        <div id="content">
+            <h2>Welcome!</h2>
+            <p>Click on the links above to load content dynamically.</p>
+        </div>
+    
         <script>
-          fetch("other.html")
-            .then(response => response.text())
-            .then(html => {
-              document.getElementById("content").innerHTML = html;
-            })
-            .catch(error => console.error("Error loading the file:", error));
+            function loadPage(page) {
+                fetch(page)
+                    .then(response => {
+                        if (!response.ok) throw new Error("Page not found");
+                        return response.text();
+                    })
+                    .then(html => {
+                        document.getElementById("content").innerHTML = html;
+                        history.pushState({ page: page }, "", page);
+                    })
+                    .catch(error => {
+                        document.getElementById("content").innerHTML = "<h2>Error Loading Page</h2><p>" + error.message + "</p>";
+                    });
+            }
+    
+            // Handle back/forward navigation
+            window.addEventListener("popstate", (event) => {
+                if (event.state && event.state.page) {
+                    loadPage(event.state.page);
+                }
+            });
         </script>
         
     <footer>
